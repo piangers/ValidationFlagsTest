@@ -6,53 +6,43 @@ from PyQt4.QtCore import QObject, SIGNAL, QVariant
 from PyQt4.QtSql import QSqlDatabase, QSqlQuery
 import resources_rc  
 from qgis.gui import QgsMessageBar
-from DsgTools.dsgEnums import DsgEnums
 
-class ValidationFlags:
+class StartOutofBoundsAngles:
 
-    def __init__(self, iface):
+    def __init__(self, iface, layer):
         
         self.iface = iface
 
+        self.layer = layer
         self.tableSchema = 'edgv'
         self.geometryColumn = 'geom'
         self.keyColumn = 'id'
         self.angle = 10
 
-    def initGui(self): 
-        # cria uma ação que iniciará a configuração do plugin 
-        pai = self.iface.mainWindow()
-        icon_path = ':/plugins/ValidationFlags/icon.png'
-        self.action = QAction (QIcon (icon_path),u"Acessa banco de dados para encontrar erros de validação.", pai)
-        self.action.setObjectName ("Validation Flags test ")
-        self.action.setStatusTip(None)
-        self.action.setWhatsThis(None)
-        self.action.triggered.connect(self.run)
-        # Adicionar o botão icone
-        self.iface.addToolBarIcon (self.action) 
+    # def initGui(self): 
+    #     # cria uma ação que iniciará a configuração do plugin 
+    #     pai = self.iface.mainWindow()
+    #     icon_path = ':/plugins/StartOutofBoundsAngles/icon.png'
+    #     self.action = QAction (QIcon (icon_path),u"Acessa banco de dados para encontrar anglos fechados.", pai)
+    #     self.action.setObjectName ("Start database")
+    #     self.action.setStatusTip(None)
+    #     self.action.setWhatsThis(None)
+    #     self.action.triggered.connect(self.run)
+    #     # Adicionar o botão icone
+    #     self.iface.addToolBarIcon (self.action) 
 
-    def unload(self):
-        # remove o item de ícone do QGIS GUI.
-        self.iface.removeToolBarIcon (self.action)
-
-
-
-    def loger(self):
+    # def unload(self):
+    #     # remove o item de ícone do QGIS GUI.
+    #     self.iface.removeToolBarIcon (self.action)
+        
+        
+    def run(self, fid = 0):
 
     ##################################
     ###### PEGA A LAYER ATIVA ########
     ##################################
 
-        layer = self.iface.activeLayer() 
-
-        if not layer:
-            self.iface.messageBar().pushMessage("Erro", u"Esperando uma Active Layer!", level=QgsMessageBar.CRITICAL, duration=4)
-            return
-        if layer.featureCount() == 0:
-            self.iface.messageBar().pushMessage("Erro", u"a camada não possui feições!", level=QgsMessageBar.CRITICAL, duration=4)
-            return
-
-        parametros = layer.source().split(" ") # recebe todos os parametros em uma lista ( senha, porta, password etc..)
+        parametros = self.layer.source().split(" ") # recebe todos os parametros em uma lista ( senha, porta, password etc..)
 
     ####################################
     ###### INICIANDO CONEXÃO DB ########
@@ -85,7 +75,12 @@ class ValidationFlags:
             elif "password" in part[0]:
                 password = part[1].split("|")[0].replace("'", "")
 
-        #print dbname, host, port, user, password
+        print dbname, host, port, user, password
+
+
+
+    
+
 
         # Testa se os parametros receberam os valores pretendidos, caso não, apresenta a mensagem informando..
         if len(dbname) == 0 or len(host) == 0 or port == 0 or len(user) == 0 or len(password) == 0:
@@ -114,9 +109,9 @@ class ValidationFlags:
     ###### CRIAÇÃO DE MEMORY LAYER #####
     ####################################
         
-        layerCrs = layer.crs().authid() # Passa o formato (epsg: numeros)
+        layerCrs = self.layer.crs().authid() # Passa o formato (epsg: numeros)
 
-        flagsLayerName = layer.name() + "_flags"
+        flagsLayerName = self.layer.name() + "_flags"
         flagsLayerExists = False
 
         for l in QgsMapLayerRegistry.instance().mapLayers().values(): # Recebe todas as camadas que estão abertas
@@ -132,19 +127,21 @@ class ValidationFlags:
 
             self.flagsLayer = QgsVectorLayer(tempString, flagsLayerName, "memory")
             self.flagsLayerProvider = self.flagsLayer.dataProvider()
-            self.flagsLayerProvider.addAttributes([QgsField("flagId", QVariant.Int), QgsField("geomId", QVariant.String), QgsField("motivo", QVariant.String)])
+            self.flagsLayerProvider.addAttributes([QgsField("flagId", QVariant.String), QgsField("geomId", QVariant.String), QgsField("motivo", QVariant.String)])
             self.flagsLayer.updateFields()
 
-        self.flagsLayer.startEditing()
-        ids = [feat.id() for feat in self.flagsLayer.getFeatures()]
-        self.flagsLayer.deleteFeatures(ids)
-        self.flagsLayer.commitChanges()
+        if fid == 0: # Se for 0 então está iniciando e limpa, caso contrário não.
+            self.flagsLayer.startEditing()
+            ids = [feat.id() for feat in self.flagsLayer.getFeatures()]
+            self.flagsLayer.deleteFeatures(ids)
+            self.flagsLayer.commitChanges()
+        
         
         lista_fid = [] # Iniciando lista
-        for f in layer.getFeatures():
+        for f in self.layer.getFeatures():
             lista_fid.append(str(f.id())) # Guarda na lista. A lista de Feature ids passa tipo "int", foi convertido e guardado como "str".
 
-        source = layer.source().split(" ")
+        source = self.layer.source().split(" ")
         self.tableName = "" # Inicia vazio
         layerExistsInDB = False
         
@@ -160,65 +157,8 @@ class ValidationFlags:
             self.iface.messageBar().pushMessage("Erro", u"Provedor da camada corrente não provem do banco de dados!", level=QgsMessageBar.CRITICAL, duration=4)
             return
 
-        self.sqlAngulo
-        self.sqlIntersect
-        self.sqlDuplic
-        self.sqlNotSimple
         
-        query = QSqlQuery(sql)
-        
-        self.flagsLayer.startEditing()
-        flagCount = 0 # iniciando contador que será referência para os IDs da camada de memória.
-
-        listaFeatures = []
-        while query.next():
-            id = query.value(0)
-            local = query.value(1)
-            angulo = query.value(2)
-            flagId = flagCount
-
-            print id, local, angulo
-
-            flagFeat = QgsFeature()
-            flagGeom = QgsGeometry.fromWkt(local) # passa o local onde foi localizado o erro.
-            flagFeat.setGeometry(flagGeom)
-            #flagFeat.initAttributes(3)
-            flagFeat.setAttribute(0,flagId) # insere o id definido para a coluna 0 da layer de memória.
-            flagFeat.setAttribute(1, id) # insere o id da geometria  para a coluna 1 da layer de memória.
-            
-            if self.sqlAngulo:
-                flagFeat.setAttribute(2, u"Ângulo para os vértices adjacentes inferior à tolerância")
-            if self.sqlDuplic:
-                flagFeat.setAttribute(2, u"Duplicação de Geometria")
-            if self.sqlIntersect:
-                flagFeat.setAttribute(2, u"Interseção de Geometria encontrada")
-            if self.sqlNotSimple:
-                flagFeat.setAttribute(2, u"Geometria não é simples")
-
-            listaFeatures.append(flagFeat)    
-
-            flagCount += 1 # incrementando o contador a cada iteração
-
-        self.flagsLayerProvider.addFeatures(listaFeatures)
-        self.flagsLayer.commitChanges() # Aplica as alterações à camada.
-        
-        QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa
-        
-        if flagCount == 0: 
-            
-            QgsMapLayerRegistry.instance().removeMapLayer(self.flagsLayer.id())
-            self.iface.messageBar().pushMessage("Aviso", u"Não foi encontrado Flags em \"" + layer.name() + "\" !", level=QgsMessageBar.CRITICAL, duration=4)
-
-            return
-        if len(query.lastError().text()) == 1:
-            self.iface.messageBar().pushMessage("Aviso", "foram geradas " + str(flagCount) + " flags para a camada \"" + layer.name() + "\" !", level=QgsMessageBar.INFO, duration=4)
-        else:
-            self.iface.messageBar().pushMessage("Erro", u"a geração de flags falhou!", level=QgsMessageBar.CRITICAL, duration=4)
-            print query.lastError().text()
-
-    def sqlAngulo(self,lista_fid):
-
-        geomType = layer.geometryType()
+        geomType = self.layer.geometryType()
 
         if geomType == QGis.Line:
             
@@ -257,35 +197,34 @@ class ValidationFlags:
                                FROM only "{0}"."{1}" 
                                ) AS linestrings WHERE ST_NPoints(linestrings."{3}") > 2 ) as points)
             select distinct "{4}", ST_AsText(anchor), angle from result where (result.angle % 360) < {2} or result.angle > (360.0 - ({2} % 360.0)) and result.{4} in ({5})""".format( self.tableSchema, self.tableName, self.angle, self.geometryColumn, self.keyColumn,",".join(lista_fid) )
-
-            return sql
-
-
-    def sqlDuplic(self,lista_fid): 
+        query = QSqlQuery(sql)
         
-        sql = '''select * from (
-        SELECT "{3}",
-        ROW_NUMBER() OVER(PARTITION BY "{2}" ORDER BY "{3}" asc) AS Row,
-        ST_AsText(geom) FROM ONLY "{0}"."{1}" 
-        where {3} in ({4})
-        ) dups 
-        where dups.Row > 1'''.format(self.tableSchema, self.tableName, self.geometryColumn, self.keyColumn, ",".join(lista_fid))
+        self.flagsLayer.startEditing()
+        flagCount = fid # iniciando contador que será referência para os IDs da camada de memória.
 
-        return sql
+        listaFeatures = []
+        while query.next():
+            id = query.value(0)
+            local = query.value(1)
+            angulo = query.value(2)
+            flagId = str(flagCount)
 
+            flagFeat = QgsFeature()
+            flagFeat.setFields(self.flagsLayer.fields()) # passa quais atributos serão usados.           
+            flagGeom = QgsGeometry.fromWkt(local) # passa o local onde foi localizado o erro.
+            flagFeat.setGeometry(flagGeom)
+            flagFeat.initAttributes(3)
+            flagFeat.setAttribute(0,flagId) # insere o id definido para a coluna 0 da layer de memória.
+            flagFeat.setAttribute(1, id) # insere o id da geometria  para a coluna 1 da layer de memória.
+            flagFeat.setAttribute(2, u"Ângle exceded bound")
+        
+            listaFeatures.append(flagFeat)    
 
-    def sqlNotSimple(self,lista_fid):
+            flagCount += 1 # incrementando o contador a cada iteração.
 
-        sql = """select foo."{3}" as "{3}", ST_AsText(ST_MULTI(st_startpoint(foo."{2}"))) as "{2}" from (
-        select "{3}" as "{3}", (ST_Dump(ST_Node(ST_SetSRID(ST_MakeValid("{2}"),ST_SRID("{2}"))))).geom as "{2}" from "{0}"."{1}"  
-        where ST_IsSimple("{2}") = 'f' and {3} in ({4})) as foo where st_equals(st_startpoint(foo."{2}"),st_endpoint(foo."{2}"))""".format(self.tableSchema, self.tableName, self.geometryColumn, self.keyColumn, ",".join(lista_fid))
+        self.flagsLayerProvider.addFeatures(listaFeatures)
+        self.flagsLayer.commitChanges() # Aplica as alterações à camada.
+        
+        QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa.
 
-        return sql
-
-
-    def sqlIntersect(self,lista_fid):
-        sql = '''select distinct (reason(ST_IsValidDetail(f."{2}",0))) AS motivo, 
-        ST_AsText(ST_Multi(ST_SetSrid(location(ST_IsValidDetail(f."{2}",0)), ST_Srid(f.{2})))) as local from 
-        (select "{3}", "{2}" from only "{0}"."{1}"  where ST_IsValid("{2}") = 'f' and {3} in ({4})) as f''' .format(self.tableSchema, self.tableName, self.geometryColumn, self.keyColumn, ",".join(lista_fid))
-
-        return sql
+        return flagCount

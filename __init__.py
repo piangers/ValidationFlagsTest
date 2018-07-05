@@ -2,5 +2,5 @@
 
 def classFactory(iface):
     
-    from ValidationFlags import ValidationFlags
-    return ValidationFlags(iface)
+    from ValidaFlags import ValidaFlags
+    return ValidaFlags(iface)
