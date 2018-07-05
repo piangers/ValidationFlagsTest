@@ -188,18 +188,6 @@ class StartTestIntersection:
         self.flagsLayer.commitChanges() # Aplica as alterações à camada.
         
         QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa.
-        
-        # if flagCount == 0: 
-            
-        #     # QgsMapLayerRegistry.instance().removeMapLayer(self.flagsLayer.id())
-        #     self.iface.messageBar().pushMessage("Aviso", u"Não foi encontrado Flags em \"" + self.layer.name() + "\" !", level=QgsMessageBar.CRITICAL, duration=4)
-
-        #     return
-        # if len(query.lastError().text()) == 1:
-        #     self.iface.messageBar().pushMessage("Aviso", "foram geradas " + str(flagCount) + " flags para a camada \"" + self.layer.name() + "\" !", level=QgsMessageBar.INFO, duration=4)
-        # else:
-        #     self.iface.messageBar().pushMessage("Erro", u"a geração de flags falhou!", level=QgsMessageBar.CRITICAL, duration=4)
-        #     print query.lastError().text()
 
         return flagCount
 

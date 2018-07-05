@@ -216,7 +216,7 @@ class StartOutofBoundsAngles:
             flagFeat.initAttributes(3)
             flagFeat.setAttribute(0,flagId) # insere o id definido para a coluna 0 da layer de memória.
             flagFeat.setAttribute(1, id) # insere o id da geometria  para a coluna 1 da layer de memória.
-            flagFeat.setAttribute(2, u"Ângle exceded bound")
+            flagFeat.setAttribute(2, u"Ângle-ExcededBound")
         
             listaFeatures.append(flagFeat)    
 

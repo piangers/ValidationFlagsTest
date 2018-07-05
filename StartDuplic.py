@@ -180,7 +180,7 @@ class StartDuplic:
             flagFeat.setGeometry(flagGeom)
             flagFeat.setAttribute(0,flagId) # insere o id definido para a coluna 0 da layer de memória.
             flagFeat.setAttribute(1,id) # insere o id da geometria para a coluna 1 da layer de memória.
-
+            flagFeat.setAttribute(2,u'Duplic-Geom')
             listaFeatures.append(flagFeat)    
 
             flagCount += 1 # incrementando o contador a cada iteração.

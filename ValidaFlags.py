@@ -40,7 +40,6 @@ class ValidaFlags:
         # remove o item de ícone do QGIS GUI.
         self.iface.removeToolBarIcon (self.action)
 
-
     def validate(self):
 
         self.layer = self.iface.activeLayer()
