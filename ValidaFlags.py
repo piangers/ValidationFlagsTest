@@ -33,12 +33,8 @@ class ValidaFlags:
         # Adicionar o botão icone
         self.iface.addToolBarIcon (self.action)
 
-
-
         # SLOTS
         self.action.triggered.connect(self.validate)
-
-
 
     def unload(self):
         # remove o item de ícone do QGIS GUI.
@@ -60,7 +56,6 @@ class ValidaFlags:
         self.intersect = StartTestIntersection(self.iface, self.layer)
         self.outOfBounds = StartOutofBoundsAngles(self.iface, self.layer)
         self.duplicate = StartDuplic(self.iface, self.layer)
-
 
         flagId = self.notSimple.run(0)
         flagId = self.intersect.run(flagId)
