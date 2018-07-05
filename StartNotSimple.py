@@ -17,7 +17,7 @@ class StartNotSimple:
         self.tableSchema = 'edgv'
         self.geometryColumn = 'geom'
         self.keyColumn = 'id'
-        
+
         
     def run(self, fid = 0):
 
@@ -174,3 +174,4 @@ class StartNotSimple:
         QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa.
 
         return flagCount
+        

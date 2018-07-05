@@ -17,7 +17,7 @@ class StartDuplic:
         self.tableSchema = 'edgv'
         self.geometryColumn = 'geom'
         self.keyColumn = 'id'
-        
+
         
     def run(self, fid = 0):
 
@@ -176,7 +176,3 @@ class StartDuplic:
         QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa.
        
         return flagCount
-
-
-
-

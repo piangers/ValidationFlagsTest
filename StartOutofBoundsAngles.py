@@ -62,10 +62,6 @@ class StartOutofBoundsAngles:
         print dbname, host, port, user, password
 
 
-
-    
-
-
         # Testa se os parametros receberam os valores pretendidos, caso não, apresenta a mensagem informando..
         if len(dbname) == 0 or len(host) == 0 or port == 0 or len(user) == 0 or len(password) == 0:
             self.iface.messageBar().pushMessage("Erro", u'Um dos parametros não foram devidamente recebidos!', level=QgsMessageBar.CRITICAL, duration=4)
@@ -212,3 +208,4 @@ class StartOutofBoundsAngles:
         QgsMapLayerRegistry.instance().addMapLayer(self.flagsLayer) # Adicione a camada no mapa.
 
         return flagCount
+        
