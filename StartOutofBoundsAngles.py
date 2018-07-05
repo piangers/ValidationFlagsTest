@@ -19,22 +19,6 @@ class StartOutofBoundsAngles:
         self.keyColumn = 'id'
         self.angle = 10
 
-    # def initGui(self): 
-    #     # cria uma ação que iniciará a configuração do plugin 
-    #     pai = self.iface.mainWindow()
-    #     icon_path = ':/plugins/StartOutofBoundsAngles/icon.png'
-    #     self.action = QAction (QIcon (icon_path),u"Acessa banco de dados para encontrar anglos fechados.", pai)
-    #     self.action.setObjectName ("Start database")
-    #     self.action.setStatusTip(None)
-    #     self.action.setWhatsThis(None)
-    #     self.action.triggered.connect(self.run)
-    #     # Adicionar o botão icone
-    #     self.iface.addToolBarIcon (self.action) 
-
-    # def unload(self):
-    #     # remove o item de ícone do QGIS GUI.
-    #     self.iface.removeToolBarIcon (self.action)
-        
         
     def run(self, fid = 0):
 

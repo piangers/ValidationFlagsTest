@@ -17,24 +17,6 @@ class StartNotSimple:
         self.tableSchema = 'edgv'
         self.geometryColumn = 'geom'
         self.keyColumn = 'id'
-
-    # def initGui(self): 
-    #     # cria uma ação que iniciará a configuração do plugin 
-    #     pai = self.iface.mainWindow()
-    #     icon_path = ':/plugins/StartNotSimple/icon.png'
-    #     self.action = QAction (QIcon (icon_path),u"Acessa banco de dados para revisão de Geometria Simples", pai)
-    #     self.action.setObjectName ("Stard database")
-    #     self.action.setStatusTip(None)
-    #     self.action.setWhatsThis(None)
-    #     self.action.triggered.connect(self.run)
-    #     # Adicionar o botão icone
-    #     self.iface.addToolBarIcon (self.action) 
-    #     #Cria uma nova toolbar
-    #     #self.toolbar = self.iface.addToolBar(u'Validation Tool')
-    #     #self.toolbar.addAction(self.action)
-    # def unload(self):
-    #     # remove o item de ícone do QGIS GUI.
-    #     self.iface.removeToolBarIcon (self.action)
         
         
     def run(self, fid = 0):

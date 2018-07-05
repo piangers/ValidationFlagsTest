@@ -17,22 +17,6 @@ class StartDuplic:
         self.tableSchema = 'edgv'
         self.geometryColumn = 'geom'
         self.keyColumn = 'id'
-
-    # def initGui(self): 
-    #     # cria uma ação que iniciará a configuração do plugin 
-    #     pai = self.iface.mainWindow()
-    #     icon_path = ':/plugins/StartDuplic/icon.png'
-    #     self.action = QAction (QIcon (icon_path),u"Acessa banco de dados para revisão de Duplicação.", pai)
-    #     self.action.setObjectName ("Start duplicate verification")
-    #     self.action.setStatusTip(None)
-    #     self.action.setWhatsThis(None)
-    #     self.action.triggered.connect(self.run)
-    #     # Adicionar o botão icone
-    #     self.iface.addToolBarIcon (self.action) 
-
-    # def unload(self):
-    #     # remove o item de ícone do QGIS GUI.
-    #     self.iface.removeToolBarIcon (self.action)
         
         
     def run(self, fid = 0):
@@ -168,6 +152,7 @@ class StartDuplic:
 
         listaFeatures = []
         while query.next():
+
             id = query.value(0)
             ord = query.value(1)
             local = query.value(2)
